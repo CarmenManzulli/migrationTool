@@ -19,6 +19,7 @@
     "no-let": true,
     "no-method-signature": true,
     "no-mixed-interface": false,
+    "parameters-max-number": false,
     "prettier": true,
     "no-console": false,
     "object-literal-sort-keys": false,
