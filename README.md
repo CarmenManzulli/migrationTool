@@ -7,7 +7,7 @@
 ### What is this?
 
 Migration Tool for Watson Workspaces under IWO-CB project:\
-IWO-CB GitHub Repository: [https://github.ibm.com/sergio-manetta/iwo-cb](https://github.ibm.com/sergio-manetta/iwo-cb)\
+IWO-CB GitHub Repository: [https://github.com/CarmenManzulli/migrationTool](https://github.com/CarmenManzulli/migrationTool)\
 \
 It clones Workspaces from a source env to a target env filtering by Workspace Name defined into DB
 
