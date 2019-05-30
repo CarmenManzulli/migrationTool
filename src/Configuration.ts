@@ -32,20 +32,20 @@ export const Configuration = {
   },
   TARGET: {
     DB: {
-      DBNAME: process.env.TARGET_DB2_DBNAME || "hsp40824",
+      DBNAME: process.env.TARGET_DB2_DBNAME || "BLUDB",
       HOSTNAME:
         process.env.TARGET_DB2_HOSTNAME ||
         "http://dashdb-txn-sbox-yp-dal09-04.services.dal.bluemix.net/",
-      UID: process.env.TARGET_DB2_UID || "",
+      UID: process.env.TARGET_DB2_UID || "hsp40824",
       PWD: process.env.TARGET_DB2_PWD || "cbqw+bc0nzkfh5p4",
       PORT: Number(process.env.TARGET_DB2_PORT) || 50000
     },
     WATSON_API: {
-      USERNAME:
-        process.env.TARGET_WATSON_USERNAME ||
+      USERNAME: process.env.TARGET_WATSON_USERNAME || "apikey",
+      VERSION: process.env.TARGET_WATSON_VERSION || "2018-07-10",
+      PASSWORD:
+        process.env.TARGET_WATSON_PASSWORD ||
         "qGcsRSdAyHPv58cMuMiFxyoe5l9CyFKCk_awS8AIlq7m",
-      VERSION: process.env.TARGET_WATSON_VERSION || "",
-      PASSWORD: process.env.TARGET_WATSON_PASSWORD || "",
       URL:
         process.env.TARGET_WATSON_URL ||
         "https://gateway-fra.watsonplatform.net/assistant/api"
@@ -74,11 +74,15 @@ export const IDatabaseConfig = t.interface({
 });
 export type IDatabaseConfig = t.TypeOf<typeof IDatabaseConfig>;
 
-export const IEnvironmentConfig = t.interface({
-  BACKUP_DIRECTORY: NonEmptyString,
-  DB: IDatabaseConfig,
-  WATSON_API: IWatsonConfig
-});
+export const IEnvironmentConfig = t.intersection([
+  t.interface({
+    DB: IDatabaseConfig,
+    WATSON_API: IWatsonConfig
+  }),
+  t.partial({
+    BACKUP_DIRECTORY: NonEmptyString
+  })
+]);
 export type IEnvironmentConfig = t.TypeOf<typeof IEnvironmentConfig>;
 
 export const IMigrationParametersConfig = t.interface({

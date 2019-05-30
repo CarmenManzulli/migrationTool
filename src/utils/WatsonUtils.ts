@@ -104,16 +104,15 @@ export function getWorkspaceInformationById(
   });
 }
 
-// upload workspace single or all workspaces
+// upload always a single workspace
 export function uploadWorkspaceInformationById(
   watsonAssistantClient: watson.AssistantV1,
-  workspace: Workspace
+  workspace: UpdateWorkspaceParams
 ): Promise<Either<Error, Workspace>> {
-  logger.info(`Retrieving Information about a workspace Id`);
+  logger.info(`Upload workspace to target`);
   return new Promise<Either<Error, Workspace>>(resolve => {
     watsonAssistantClient.updateWorkspace(workspace, (err, response) => {
       resolve(decodeWatsonResponse(err, response));
-      console.log(JSON.stringify(response));
     });
   });
 }
