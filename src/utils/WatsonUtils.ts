@@ -16,7 +16,8 @@ import {
   IntentExport,
   ValueExport,
   Workspace,
-  WorkspaceExport
+  WorkspaceExport,
+  UpdateWorkspaceParams
 } from "watson-developer-cloud/assistant/v1";
 import {
   CreateValue,
@@ -100,6 +101,20 @@ export function getWorkspaceInformationById(
         resolve(decodeWatsonResponse(err, response));
       }
     );
+  });
+}
+
+// upload workspace single or all workspaces
+export function uploadWorkspaceInformationById(
+  watsonAssistantClient: watson.AssistantV1,
+  workspace: Workspace
+): Promise<Either<Error, Workspace>> {
+  logger.info(`Retrieving Information about a workspace Id`);
+  return new Promise<Either<Error, Workspace>>(resolve => {
+    watsonAssistantClient.updateWorkspace(workspace, (err, response) => {
+      resolve(decodeWatsonResponse(err, response));
+      console.log(JSON.stringify(response));
+    });
   });
 }
 

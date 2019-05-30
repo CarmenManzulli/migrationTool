@@ -30,6 +30,27 @@ export const Configuration = {
         "https://gateway-fra.watsonplatform.net/assistant/api"
     }
   },
+  TARGET: {
+    DB: {
+      DBNAME: process.env.TARGET_DB2_DBNAME || "hsp40824",
+      HOSTNAME:
+        process.env.TARGET_DB2_HOSTNAME ||
+        "http://dashdb-txn-sbox-yp-dal09-04.services.dal.bluemix.net/",
+      UID: process.env.TARGET_DB2_UID || "",
+      PWD: process.env.TARGET_DB2_PWD || "cbqw+bc0nzkfh5p4",
+      PORT: Number(process.env.TARGET_DB2_PORT) || 50000
+    },
+    WATSON_API: {
+      USERNAME:
+        process.env.TARGET_WATSON_USERNAME ||
+        "qGcsRSdAyHPv58cMuMiFxyoe5l9CyFKCk_awS8AIlq7m",
+      VERSION: process.env.TARGET_WATSON_VERSION || "",
+      PASSWORD: process.env.TARGET_WATSON_PASSWORD || "",
+      URL:
+        process.env.TARGET_WATSON_URL ||
+        "https://gateway-fra.watsonplatform.net/assistant/api"
+    }
+  },
   MIGRATION_TOOL_PARAMETERS: {
     MIGRATE_ALL: true,
     SINGLE_WORKSPACE_ID: process.env.SINGLE_WORKSPACE_ID || ""
@@ -70,6 +91,7 @@ export type IMigrationParametersConfig = t.TypeOf<
 
 export const IConfiguration = t.interface({
   SOURCE: IEnvironmentConfig,
+  TARGET: IEnvironmentConfig,
   MIGRATION_TOOL_PARAMETERS: IMigrationParametersConfig
 });
 export type IConfiguration = t.TypeOf<typeof IConfiguration>;
