@@ -35,7 +35,7 @@ export const Configuration = {
       DBNAME: process.env.TARGET_DB2_DBNAME || "BLUDB",
       HOSTNAME:
         process.env.TARGET_DB2_HOSTNAME ||
-        "http://dashdb-txn-sbox-yp-dal09-04.services.dal.bluemix.net/",
+        "dashdb-txn-sbox-yp-dal09-04.services.dal.bluemix.net",
       UID: process.env.TARGET_DB2_UID || "hsp40824",
       PWD: process.env.TARGET_DB2_PWD || "cbqw+bc0nzkfh5p4",
       PORT: Number(process.env.TARGET_DB2_PORT) || 50000
@@ -52,8 +52,9 @@ export const Configuration = {
     }
   },
   MIGRATION_TOOL_PARAMETERS: {
-    MIGRATE_ALL: true,
-    SINGLE_WORKSPACE_ID: process.env.SINGLE_WORKSPACE_ID || ""
+    MIGRATE_ALL: false,
+    SINGLE_WORKSPACE_ID:
+      process.env.SINGLE_WORKSPACE_ID || "3715b1ac-2618-4eec-8e03-2ad336005b67"
   }
 };
 
