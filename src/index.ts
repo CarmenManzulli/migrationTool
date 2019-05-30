@@ -38,7 +38,7 @@ export async function startTool(): Promise<void> {
     endProcessHandler(dbClientSource);
   });
 
-  // CREA I CLIENT WATSON
+  // CREATE CLIENT WATSON SOURCE
   const watsonSourceClientOrError = WatsonUtils.getWatsonAssistantClient(
     config.SOURCE.WATSON_API
   );
@@ -48,6 +48,29 @@ export async function startTool(): Promise<void> {
     return;
   }
   const watsonSourceClient = watsonSourceClientOrError.value;
+
+  // Retrieve a client for Target DB services
+  const dbClientTargetOrError = DbUtils.getDb2Client(config.SOURCE.DB);
+  if (isLeft(dbClientSourceOrError)) {
+    logger.info("wrong result from getDb2Target");
+    endProcessHandler(undefined);
+    return;
+  }
+
+  const dbClientTarget = dbClientTargetOrError.value;
+  // Catch if administrator is stopping the Server to avoid to keep open the DB connection
+  process.stdin.resume();
+  process.on(`SIGINT`, () => {
+    endProcessHandler(dbClientTarget);
+  });
+  // CREATE CLIENT WATSON TARGET
+  const watsonTargetClientOrError = WatsonUtils.getWatsonAssistantClient(
+    config.TARGET.WATSON_API
+  );
+  if (isLeft(watsonTargetClientOrError)) {
+    console.log("error in target watson client");
+    return;
+  }
 
   const workspaceToMigrateOrError = await MigrationUtils.getWorkspaceToMigrate(
     watsonSourceClient,
@@ -61,7 +84,12 @@ export async function startTool(): Promise<void> {
 
   const dbSourceClosed = DbUtils.closeDbConnection(dbClientSource);
   if (!dbSourceClosed) {
-    logger.error(`Error occurred closing DB Connection`);
+    logger.error(`Error occurred closing DB Connection Source`);
+  }
+
+  const dbTargetClosed = DbUtils.closeDbConnection(dbClientTarget);
+  if (!dbTargetClosed) {
+    logger.error(`Error occurred closing DB Connection Target`);
   }
 }
 
