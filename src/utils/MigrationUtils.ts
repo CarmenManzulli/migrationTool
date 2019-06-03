@@ -9,10 +9,7 @@ import * as t from "io-ts";
 import { NonEmptyString } from "italia-ts-commons/lib/strings";
 import { AssistantV1 } from "watson-developer-cloud";
 import { Workspace } from "watson-developer-cloud/assistant/v1";
-import {
-  WorkspaceExport,
-  UpdateWorkspaceParams
-} from "watson-developer-cloud/conversation/v1-generated";
+import { WorkspaceExport } from "watson-developer-cloud/conversation/v1-generated";
 import { IConfiguration, IMigrationParametersConfig } from "../Configuration";
 import { getDbQueryItemListFromModel } from "../dao/WorkspaceDao";
 import { WorkspaceDbModel } from "../models/WorkspaceDbModel";
@@ -272,8 +269,8 @@ export async function uploadWorkspaces(
             name: workspaceToMigrate.workspace.name,
             description: workspaceToMigrate.workspace.description,
             language: workspaceToMigrate.workspace.language,
+            entities: workspaceToMigrate.workspace.entities,
             intents: workspaceToMigrate.workspace.intents,
-            entities: workspaceToMigrate.workspace.entities.slice(0, 15),
             dialog_nodes: workspaceToMigrate.workspace.dialog_nodes,
             counterexamples: workspaceToMigrate.workspace.counterexamples,
             metadata: workspaceToMigrate.workspace.metadata,
@@ -291,9 +288,7 @@ export async function uploadWorkspaces(
             const errMsg = `error to update workspace`;
             throw Error(errMsg);
           }
-          const workspaceUpdate = workspaceUpdateOrError.value;
-
-          return;
+          return workspaceUpdateOrError.value;
         }
       )
     );

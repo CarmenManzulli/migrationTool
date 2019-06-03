@@ -82,8 +82,6 @@ export async function startTool(): Promise<void> {
     logger.error("error uploading workpaces to migrate");
     return;
   }
-  const workspacesTargetToMigrate = workspacesTargetToMigrateOrError.value;
-
   const dbSourceClosed = DbUtils.closeDbConnection(dbClientSource);
   if (!dbSourceClosed) {
     logger.error(`Error occurred closing DB Connection Source`);
@@ -100,6 +98,8 @@ export async function startTool(): Promise<void> {
     endProcessHandler(dbClientTarget);
     endProcessHandler(dbClientSource);
   });
+
+  return process.exit();
 }
 
 function endProcessHandler(dbClient: Database): void {

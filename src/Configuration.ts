@@ -45,7 +45,7 @@ export const Configuration = {
       VERSION: process.env.TARGET_WATSON_VERSION || "2018-07-10",
       PASSWORD:
         process.env.TARGET_WATSON_PASSWORD ||
-        "qGcsRSdAyHPv58cMuMiFxyoe5l9CyFKCk_awS8AIlq7m",
+        "baz7-IqfcrUhfZuSAhHme2BsnsYX6yoQtMHa4ACLt16M",
       URL:
         process.env.TARGET_WATSON_URL ||
         "https://gateway-fra.watsonplatform.net/assistant/api"
@@ -54,7 +54,7 @@ export const Configuration = {
   MIGRATION_TOOL_PARAMETERS: {
     MIGRATE_ALL: false,
     SINGLE_WORKSPACE_ID:
-      process.env.SINGLE_WORKSPACE_ID || "59297d1e-7d09-4ddc-a04f-c28ad3c8d517"
+      process.env.SINGLE_WORKSPACE_ID || "6423ca79-57d8-4305-8826-073e2ead33c3"
   }
 };
 

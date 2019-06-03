@@ -24,7 +24,9 @@ import {
   DeleteWorkspaceParams,
   EntityExport,
   Example,
-  WorkspaceCollection
+  WorkspaceCollection,
+  UpdateEntityParams,
+  Entity
 } from "watson-developer-cloud/conversation/v1-generated";
 import { Empty } from "watson-developer-cloud/natural-language-understanding/v1-generated";
 import { IWatsonConfig } from "../Configuration";
