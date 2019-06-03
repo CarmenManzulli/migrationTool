@@ -152,6 +152,9 @@ export async function getWorkspacesToMigrate(
     return left(dbWorkspacesOrError.value);
   }
   const dbWorkspaces = dbWorkspacesOrError.value;
+  if (dbWorkspaces.length === 0) {
+    throw Error("There aren't elements in database source");
+  }
   // Getting List from source watson
   const watsonWorkspacesOrError = await WatsonUtils.getWorkspacesList(
     watsonSourceClient
@@ -245,7 +248,6 @@ export async function uploadWorkspaces(
   workspacesToMigrate: WorkspacesToMigrate
 ): Promise<Either<Error, ReadonlyArray<Workspace>>> {
   try {
-    console.log(workspacesToMigrate.length);
     const workspacesUpdated = await Promise.all(
       workspacesToMigrate.map(
         async (workspaceToMigrate: WorkspaceToMigrate): Promise<Workspace> => {
@@ -265,28 +267,21 @@ export async function uploadWorkspaces(
               `Non single result for ${workspaceToMigrate.dbWorkspaceName}`
             );
           }
-
-          console.log(
-            "\n\n\n\n-----------------------------------------------------------------------\n\n\n\n intent convertrtttttttttttttt"
-          );
-
           const params = {
             workspace_id: targetWorkspacesId[0].workspaceId as string,
             name: workspaceToMigrate.workspace.name,
             description: workspaceToMigrate.workspace.description,
             language: workspaceToMigrate.workspace.language,
             intents: workspaceToMigrate.workspace.intents,
-            entities: workspaceToMigrate.workspace.entities,
+            entities: workspaceToMigrate.workspace.entities.slice(0, 15),
             dialog_nodes: workspaceToMigrate.workspace.dialog_nodes,
             counterexamples: workspaceToMigrate.workspace.counterexamples,
             metadata: workspaceToMigrate.workspace.metadata,
             learning_opt_out: workspaceToMigrate.workspace.learning_opt_out,
             system_settings: workspaceToMigrate.workspace.system_settings
-          } as UpdateWorkspaceParams;
-          console.log("intents converted");
+          } as any;
 
           // update workspace in target watson
-
           const workspaceUpdateOrError = await WatsonUtils.uploadWorkspaceInformationById(
             watsonTargetClient,
             params
@@ -297,7 +292,6 @@ export async function uploadWorkspaces(
             throw Error(errMsg);
           }
           const workspaceUpdate = workspaceUpdateOrError.value;
-          console.log("upated --", workspaceUpdate);
 
           return;
         }
