@@ -81,6 +81,24 @@ export function getSelectAllStatement(
   }
 }
 
+export function getIdFromTargetDb(
+  tableName: string,
+  nameRecord: string,
+  dbClient: Database
+): Either<Error, ODBCStatement> {
+  // Define the SQL query
+  const queryBase = `SELECT ID FROM ${tableName} WHERE NAME = ${nameRecord}`;
+  // Bind parameters using prepare pattern
+  try {
+    const stmt = dbClient.prepareSync(`${queryBase}`);
+    return right(stmt);
+  } catch (exception) {
+    const errMsg = `Error binding parameters into a select Id stmt`;
+    logger.info(errMsg);
+    return left(Error(errMsg));
+  }
+}
+
 export function getBindItems(
   dbQueryItems: ReadonlyArray<DbQueryItem>
 ): ReadonlyArray<DbBindItem> {

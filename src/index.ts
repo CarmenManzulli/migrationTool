@@ -9,7 +9,6 @@ import * as DbUtils from "./utils/DButils";
 import { logger } from "./utils/Logger";
 import * as MigrationUtils from "./utils/MigrationUtils";
 import * as WatsonUtils from "./utils/WatsonUtils";
-import { isSymbol } from "util";
 /**
  * Execute the Migration Tool
  * @returns {Promise<void>}
@@ -75,13 +74,15 @@ export async function startTool(): Promise<void> {
 
   //migrate from source to watson target
   const workspacesTargetToMigrateOrError = await MigrationUtils.uploadWorkspaces(
+    dbClientTarget,
     watsonClientTarget,
     workspacesToMigrate
   );
   if (isLeft(workspacesTargetToMigrateOrError)) {
-    logger.error("error getting workpaces to migrate");
+    logger.error("error uploading workpaces to migrate");
     return;
   }
+  const workspacesTargetToMigrate = workspacesTargetToMigrateOrError.value;
 
   const dbSourceClosed = DbUtils.closeDbConnection(dbClientSource);
   if (!dbSourceClosed) {

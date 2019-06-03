@@ -112,6 +112,7 @@ export function uploadWorkspaceInformationById(
   logger.info(`Upload workspace to target`);
   return new Promise<Either<Error, Workspace>>(resolve => {
     watsonAssistantClient.updateWorkspace(workspace, (err, response) => {
+      console.log("---> ", response, "\n\n", err.status);
       resolve(decodeWatsonResponse(err, response));
     });
   });
