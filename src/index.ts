@@ -112,7 +112,7 @@ function endProcessHandler(dbClient: Database): void {
   }
   logger.info(`Server stopped successfully`);
 
-  process.exit();
+  process.exit()if
 }
 /**
  * Start the Migration Tool and catch error

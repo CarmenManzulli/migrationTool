@@ -276,7 +276,7 @@ export async function uploadWorkspaces(
             metadata: workspaceToMigrate.workspace.metadata,
             learning_opt_out: workspaceToMigrate.workspace.learning_opt_out,
             system_settings: workspaceToMigrate.workspace.system_settings
-          } as any;
+          };
 
           // update workspace in target watson
           const workspaceUpdateOrError = await WatsonUtils.uploadWorkspaceInformationById(
