@@ -76,6 +76,7 @@ export function getTargetWorkspacesFromTargetDb(
     return left(SelectStatementOrError.value);
   }
   const SelectStatement = SelectStatementOrError.value;
+
   const queryResultOrError = DbUtils.executeSelectQuery(SelectStatement);
   if (isLeft(queryResultOrError)) {
     return left(queryResultOrError.value);
@@ -104,8 +105,7 @@ export function getWorkspacesFromDbSource(
   if (isLeft(queryResultOrError)) {
     return left(queryResultOrError.value);
   }
-  const queryResult = queryResultOrError.value;
-  return resultArrayToWorkspaceList(queryResult);
+  return resultArrayToWorkspaceList(queryResultOrError.value);
 }
 
 // Convert db type into list type
@@ -145,12 +145,13 @@ export async function getWorkspacesToMigrate(
     configMigrationParameters
   );
   if (isLeft(dbWorkspacesOrError)) {
-    logger.info("wrong result from getWorkspacesFromDbSource");
+    logger.error("wrong result from getWorkspacesFromDbSource");
     return left(dbWorkspacesOrError.value);
   }
   const dbWorkspaces = dbWorkspacesOrError.value;
   if (dbWorkspaces.length === 0) {
-    throw Error("There aren't elements in database source");
+    logger.error("There aren't elements in database source");
+    return left(Error("There aren't elements in database source"));
   }
   // Getting List from source watson
   const watsonWorkspacesOrError = await WatsonUtils.getWorkspacesList(
@@ -252,21 +253,28 @@ export async function uploadWorkspaces(
           const targetWorkspacesIdOrError = getTargetWorkspacesFromTargetDb(
             dbTargetClient,
             WorkspaceDbSchema.TABLENAME,
-            workspaceToMigrate.dbWorkspaceName
+            workspaceToMigrate.dbWorkspaceName as NonEmptyString
           );
+
           if (isLeft(targetWorkspacesIdOrError)) {
             logger.error("Error getting Target Workspaces from Target Db");
             throw targetWorkspacesIdOrError.value;
           }
           const targetWorkspacesId = targetWorkspacesIdOrError.value;
           if (targetWorkspacesId.length !== 1) {
+            logger.error(
+              `Non single result for ${
+                workspaceToMigrate.dbWorkspaceName
+              } in db Target`
+            );
             throw Error(
-              `Non single result for ${workspaceToMigrate.dbWorkspaceName}`
+              `Non single result for ${
+                workspaceToMigrate.dbWorkspaceName
+              } in db Target`
             );
           }
           const params = {
             workspace_id: targetWorkspacesId[0].workspaceId as string,
-            name: workspaceToMigrate.workspace.name,
             description: workspaceToMigrate.workspace.description,
             language: workspaceToMigrate.workspace.language,
             entities: workspaceToMigrate.workspace.entities,
@@ -283,7 +291,6 @@ export async function uploadWorkspaces(
             watsonTargetClient,
             params
           );
-
           if (isLeft(workspaceUpdateOrError)) {
             const errMsg = `error to update workspace`;
             throw Error(errMsg);

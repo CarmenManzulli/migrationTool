@@ -24,9 +24,7 @@ import {
   DeleteWorkspaceParams,
   EntityExport,
   Example,
-  WorkspaceCollection,
-  UpdateEntityParams,
-  Entity
+  WorkspaceCollection
 } from "watson-developer-cloud/conversation/v1-generated";
 import { Empty } from "watson-developer-cloud/natural-language-understanding/v1-generated";
 import { IWatsonConfig } from "../Configuration";
@@ -106,7 +104,7 @@ export function getWorkspaceInformationById(
   });
 }
 
-// upload always a single workspace
+// upload a workspace
 export function uploadWorkspaceInformationById(
   watsonAssistantClient: watson.AssistantV1,
   workspace: UpdateWorkspaceParams

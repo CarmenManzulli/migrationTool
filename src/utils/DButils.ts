@@ -73,7 +73,6 @@ export function executeSelectQuery(
     return left(odbcResultOrError.value);
   }
   const odbcResult = odbcResultOrError.value;
-
   try {
     const fetchAllSyncResult = odbcResult.fetchAllSync();
     return right(fetchAllSyncResult);

@@ -17,7 +17,7 @@ export async function startTool(): Promise<void> {
   // Retrieve server configuration
   const configOrError = Configuration.getAppConfiguration();
   if (isLeft(configOrError)) {
-    logger.info("wrong result from getAppConfiguration");
+    logger.error("wrong result from getAppConfiguration");
     return;
   }
 
@@ -26,7 +26,7 @@ export async function startTool(): Promise<void> {
   // Retrieve a client for Source DB services
   const dbClientSourceOrError = DbUtils.getDb2Client(config.SOURCE.DB);
   if (isLeft(dbClientSourceOrError)) {
-    logger.info("wrong result from getDb2Client source");
+    logger.error("wrong result from getDb2Client source");
     endProcessHandler(dbClientSourceOrError);
     return;
   }
@@ -45,7 +45,7 @@ export async function startTool(): Promise<void> {
   // Retrieve a client for Target DB services
   const dbClientTargetOrError = DbUtils.getDb2Client(config.TARGET.DB);
   if (isLeft(dbClientTargetOrError)) {
-    logger.info("wrong result from getDb2Client target");
+    logger.error("wrong result from getDb2Client target");
     endProcessHandler(dbClientTargetOrError);
     return;
   }
@@ -56,7 +56,7 @@ export async function startTool(): Promise<void> {
     config.TARGET.WATSON_API
   );
   if (isLeft(watsonTargetClientOrError)) {
-    logger.info("error in target watson client");
+    logger.error("error in target watson client");
     return;
   }
   const watsonClientTarget = watsonTargetClientOrError.value;
@@ -82,6 +82,7 @@ export async function startTool(): Promise<void> {
     logger.error("error uploading workpaces to migrate");
     return;
   }
+
   const dbSourceClosed = DbUtils.closeDbConnection(dbClientSource);
   if (!dbSourceClosed) {
     logger.error(`Error occurred closing DB Connection Source`);
@@ -112,7 +113,7 @@ function endProcessHandler(dbClient: Database): void {
   }
   logger.info(`Server stopped successfully`);
 
-  process.exit()if
+  process.exit();
 }
 /**
  * Start the Migration Tool and catch error
