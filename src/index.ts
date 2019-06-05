@@ -17,7 +17,7 @@ export async function startTool(): Promise<void> {
   // Retrieve server configuration
   const configOrError = Configuration.getAppConfiguration();
   if (isLeft(configOrError)) {
-    logger.error(`Error getting App Configuration ${configOrError.value}`);
+    logger.error(`Error Getting App Configuration ${configOrError.value}`);
     return;
   }
 
@@ -26,9 +26,7 @@ export async function startTool(): Promise<void> {
   // Create db client for source
   const dbClientSourceOrError = DbUtils.getDb2Client(config.SOURCE.DB);
   if (isLeft(dbClientSourceOrError)) {
-    logger.error(
-      `Error getting App Configuration Source ${dbClientSourceOrError}`
-    );
+    logger.error(`Error Getting Db2 Client Source ${dbClientSourceOrError}`);
     endProcessHandler(dbClientSourceOrError);
     return;
   }
@@ -40,7 +38,7 @@ export async function startTool(): Promise<void> {
   );
   if (isLeft(watsonSourceClientOrError)) {
     logger.error(
-      `Error getting Watson Asistant Client Source ${watsonSourceClientOrError}`
+      `Error Getting In Asistant Client Source ${watsonSourceClientOrError}`
     );
     return;
   }
@@ -49,9 +47,7 @@ export async function startTool(): Promise<void> {
   // Create db client for target
   const dbClientTargetOrError = DbUtils.getDb2Client(config.TARGET.DB);
   if (isLeft(dbClientTargetOrError)) {
-    logger.error(
-      `Error getting App Configuration Target ${dbClientTargetOrError}`
-    );
+    logger.error(`Error Getting Db2 Client Target ${dbClientTargetOrError}`);
     endProcessHandler(dbClientTargetOrError);
     return;
   }
@@ -63,7 +59,7 @@ export async function startTool(): Promise<void> {
   );
   if (isLeft(watsonTargetClientOrError)) {
     logger.error(
-      `Error getting Watson Asistant Client Target ${watsonTargetClientOrError}`
+      `Error Getting In Asistant Client Target ${watsonTargetClientOrError}`
     );
     return;
   }
@@ -76,7 +72,7 @@ export async function startTool(): Promise<void> {
   );
   if (isLeft(workspacesToMigrateOrError)) {
     logger.error(
-      `Error getting Workpaces to migrate ${workspacesToMigrateOrError}`
+      `Error Getting Workpaces To Migrate ${workspacesToMigrateOrError}`
     );
     return;
   }
@@ -90,7 +86,7 @@ export async function startTool(): Promise<void> {
   );
   if (isLeft(workspacesTargetToMigrateOrError)) {
     logger.error(
-      `Error Updating Workpaces to migrate ${workspacesTargetToMigrateOrError}`
+      `Error Updating Workpaces To Migrate ${workspacesTargetToMigrateOrError}`
     );
     return;
   }

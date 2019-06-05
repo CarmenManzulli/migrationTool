@@ -149,21 +149,21 @@ export async function getWorkspacesToMigrate(
   );
   if (isLeft(dbWorkspacesOrError)) {
     logger.error(
-      `Error getting App Configuration from Database Source ${dbWorkspacesOrError}`
+      `Error Getting From Database Source ${dbWorkspacesOrError}`
     );
     return left(dbWorkspacesOrError.value);
   }
   const dbWorkspaces = dbWorkspacesOrError.value;
   if (dbWorkspaces.length === 0) {
-    logger.error("There aren't elements in database source");
-    return left(Error("There aren't elements in database source"));
+    logger.error("There Aren't Elements In Database Source");
+    return left(Error("There Aren't Elements In Database Source""));
   }
   // Getting List from source watson
   const watsonWorkspacesOrError = await WatsonUtils.getWorkspacesList(
     watsonSourceClient
   );
   if (isLeft(watsonWorkspacesOrError)) {
-    return left(Error("error getting workspaces list from source"));
+    return left(Error("Error Getting Workspaces List From Source"));
   }
   const watsonWorkspaces = watsonWorkspacesOrError.value;
 
@@ -177,7 +177,7 @@ export async function getWorkspacesToMigrate(
             dbWorkspace.workspaceId
           );
           if (listDbInWatsonListFound.length !== 1) {
-            throw Error("length other than zero");
+            throw Error("Length Other Than Zero");
           }
           const workspaceInformationOrError = await WatsonUtils.getWorkspaceInformationById(
             watsonSourceClient,
@@ -208,7 +208,7 @@ export async function getWorkspacesToMigrate(
 
 export function getFileBackupName(nameId: string): string {
   if (!nameId) {
-    logger.error("id name workspace is not correct");
+    logger.error("Id Name Workspace Is Not Correct");
   } else {
     return nameId
       .concat("_")
@@ -239,7 +239,7 @@ export function createFileBackupJson(
 ): void {
   fs.writeFile(filePathBackup, JSON.stringify(workspaceInformation), err => {
     if (err) {
-      logger.error("No such file or directory found");
+      logger.error("No Such File Or Directory Found");
     }
   });
 }
@@ -262,20 +262,20 @@ export async function updateWorkspaces(
           );
 
           if (isLeft(targetWorkspacesIdOrError)) {
-            logger.error("Error getting Target Workspaces from Target Db");
+            logger.error("Error Getting Target Workspaces From Target Db");
             throw targetWorkspacesIdOrError.value;
           }
           const targetWorkspacesId = targetWorkspacesIdOrError.value;
           if (targetWorkspacesId.length !== 1) {
             logger.error(
-              `Non single result for ${
+              `Non Single Result For ${
                 workspaceToMigrate.dbWorkspaceName
-              } in db Target`
+              } In Db Target`
             );
             throw Error(
-              `Non single result for ${
+              `Non Single Result For ${
                 workspaceToMigrate.dbWorkspaceName
-              } in db Target`
+              } In Db Target`
             );
           }
           // retrieve workspace information from buildWorkspaceParametersForMigrate
@@ -284,8 +284,8 @@ export async function updateWorkspaces(
             targetWorkspacesId[0].workspaceId as string
           );
           if (isLeft(buildWorkspaceParametersForMigrateOrError)) {
-            logger.error("Error while building workspace paramaters");
-            throw Error("Error while building workspace paramaters");
+            logger.error("Error While Building Workspace Paramaters");
+            throw Error("Error While Building Workspace Paramaters");
           }
           // update workspace in target watson
           const workspaceUpdateOrError = await WatsonUtils.updateWorkspaceInformationById(
@@ -293,7 +293,7 @@ export async function updateWorkspaces(
             buildWorkspaceParametersForMigrateOrError.value
           );
           if (isLeft(workspaceUpdateOrError)) {
-            const errMsg = `error to update workspace`;
+            const errMsg = `Error To Update Workspace`;
             throw Error(errMsg);
           }
           return workspaceUpdateOrError.value;
