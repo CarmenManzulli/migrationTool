@@ -104,7 +104,7 @@ export function getWorkspaceInformationById(
 }
 
 // update a workspace
-export function uploadWorkspaceInformationById(
+export function updateWorkspaceInformationById(
   watsonAssistantClient: watson.AssistantV1,
   workspace: UpdateWorkspaceParams
 ): Promise<Either<Error, Workspace>> {

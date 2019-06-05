@@ -23,11 +23,11 @@ export async function startTool(): Promise<void> {
 
   const config = configOrError.value;
 
-  // Retrieve a client for Source DB services
+  // Create db client for source
   const dbClientSourceOrError = DbUtils.getDb2Client(config.SOURCE.DB);
   if (isLeft(dbClientSourceOrError)) {
     logger.error(
-      `wrong result from getDb2Client source ${dbClientSourceOrError}`
+      `Error getting App Configuration Source ${dbClientSourceOrError}`
     );
     endProcessHandler(dbClientSourceOrError);
     return;
@@ -39,16 +39,18 @@ export async function startTool(): Promise<void> {
     config.SOURCE.WATSON_API
   );
   if (isLeft(watsonSourceClientOrError)) {
-    logger.error(`error in source watson client ${watsonSourceClientOrError}`);
+    logger.error(
+      `Error getting Watson Asistant Client Source ${watsonSourceClientOrError}`
+    );
     return;
   }
   const watsonSourceClient = watsonSourceClientOrError.value;
 
-  // Retrieve a client for Target DB services
+  // Create db client for target
   const dbClientTargetOrError = DbUtils.getDb2Client(config.TARGET.DB);
   if (isLeft(dbClientTargetOrError)) {
     logger.error(
-      `wrong result from getDb2Client target ${dbClientTargetOrError}`
+      `Error getting App Configuration Target ${dbClientTargetOrError}`
     );
     endProcessHandler(dbClientTargetOrError);
     return;
@@ -60,7 +62,9 @@ export async function startTool(): Promise<void> {
     config.TARGET.WATSON_API
   );
   if (isLeft(watsonTargetClientOrError)) {
-    logger.error("error in target watson client");
+    logger.error(
+      `Error getting Watson Asistant Client Target ${watsonTargetClientOrError}`
+    );
     return;
   }
   const watsonClientTarget = watsonTargetClientOrError.value;
@@ -71,20 +75,22 @@ export async function startTool(): Promise<void> {
     config
   );
   if (isLeft(workspacesToMigrateOrError)) {
-    logger.error("error getting workpaces to migrate");
+    logger.error(
+      `Error getting Workpaces to migrate ${workspacesToMigrateOrError}`
+    );
     return;
   }
   const workspacesToMigrate = workspacesToMigrateOrError.value;
 
   //migrate from source to watson target
-  const workspacesTargetToMigrateOrError = await MigrationUtils.uploadWorkspaces(
+  const workspacesTargetToMigrateOrError = await MigrationUtils.updateWorkspaces(
     dbClientTarget,
     watsonClientTarget,
     workspacesToMigrate
   );
   if (isLeft(workspacesTargetToMigrateOrError)) {
     logger.error(
-      `error uploading workpaces to migrate ${workspacesTargetToMigrateOrError}`
+      `Error Updating Workpaces to migrate ${workspacesTargetToMigrateOrError}`
     );
     return;
   }

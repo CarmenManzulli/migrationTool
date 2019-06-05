@@ -148,7 +148,9 @@ export async function getWorkspacesToMigrate(
     configMigrationParameters
   );
   if (isLeft(dbWorkspacesOrError)) {
-    logger.error(`wrong result from database source ${dbWorkspacesOrError}`);
+    logger.error(
+      `Error getting App Configuration from Database Source ${dbWorkspacesOrError}`
+    );
     return left(dbWorkspacesOrError.value);
   }
   const dbWorkspaces = dbWorkspacesOrError.value;
@@ -242,8 +244,8 @@ export function createFileBackupJson(
   });
 }
 
-// upload Information List about workspace to target watson
-export async function uploadWorkspaces(
+// update Information List about workspace to target watson
+export async function updateWorkspaces(
   dbTargetClient: Database,
   watsonTargetClient: AssistantV1,
   workspacesToMigrate: WorkspacesToMigrate
@@ -286,7 +288,7 @@ export async function uploadWorkspaces(
             throw Error("Error while building workspace paramaters");
           }
           // update workspace in target watson
-          const workspaceUpdateOrError = await WatsonUtils.uploadWorkspaceInformationById(
+          const workspaceUpdateOrError = await WatsonUtils.updateWorkspaceInformationById(
             watsonTargetClient,
             buildWorkspaceParametersForMigrateOrError.value
           );
