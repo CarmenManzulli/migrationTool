@@ -38,7 +38,7 @@ export async function startTool(): Promise<void> {
   );
   if (isLeft(watsonSourceClientOrError)) {
     logger.error(
-      `Error Getting In Asistant Client Source ${watsonSourceClientOrError}`
+      `Error Getting In Assistant Client Source ${watsonSourceClientOrError}`
     );
     return;
   }
@@ -59,7 +59,7 @@ export async function startTool(): Promise<void> {
   );
   if (isLeft(watsonTargetClientOrError)) {
     logger.error(
-      `Error Getting In Asistant Client Target ${watsonTargetClientOrError}`
+      `Error Getting In Assistant Client Target ${watsonTargetClientOrError}`
     );
     return;
   }

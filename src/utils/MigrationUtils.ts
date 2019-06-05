@@ -148,15 +148,13 @@ export async function getWorkspacesToMigrate(
     configMigrationParameters
   );
   if (isLeft(dbWorkspacesOrError)) {
-    logger.error(
-      `Error Getting From Database Source ${dbWorkspacesOrError}`
-    );
+    logger.error(`Error Getting From Database Source ${dbWorkspacesOrError}`);
     return left(dbWorkspacesOrError.value);
   }
   const dbWorkspaces = dbWorkspacesOrError.value;
   if (dbWorkspaces.length === 0) {
     logger.error("There Aren't Elements In Database Source");
-    return left(Error("There Aren't Elements In Database Source""));
+    return left(Error("There Aren't Elements In Database Source"));
   }
   // Getting List from source watson
   const watsonWorkspacesOrError = await WatsonUtils.getWorkspacesList(
