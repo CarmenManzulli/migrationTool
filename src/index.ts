@@ -17,7 +17,7 @@ export async function startTool(): Promise<void> {
   // Retrieve server configuration
   const configOrError = Configuration.getAppConfiguration();
   if (isLeft(configOrError)) {
-    logger.error("wrong result from getAppConfiguration");
+    logger.error(`Error getting App Configuration ${configOrError.value}`);
     return;
   }
 

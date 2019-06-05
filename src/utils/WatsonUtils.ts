@@ -93,7 +93,6 @@ export function getWorkspaceInformationById(
   watsonAssistantClient: watson.AssistantV1,
   workspaceId: string
 ): Promise<Either<Error, WorkspaceExport>> {
-  logger.info(`Retrieving Information about a workspace Id`, workspaceId);
   return new Promise<Either<Error, WorkspaceExport>>(resolve => {
     watsonAssistantClient.getWorkspace(
       { workspace_id: workspaceId, export: true } as GetWorkspaceParams,
@@ -104,12 +103,11 @@ export function getWorkspaceInformationById(
   });
 }
 
-// upload a workspace
+// update a workspace
 export function uploadWorkspaceInformationById(
   watsonAssistantClient: watson.AssistantV1,
   workspace: UpdateWorkspaceParams
 ): Promise<Either<Error, Workspace>> {
-  logger.info(`Upload workspace to target`);
   return new Promise<Either<Error, Workspace>>(resolve => {
     watsonAssistantClient.updateWorkspace(workspace, (err, response) => {
       resolve(decodeWatsonResponse(err, response));
@@ -125,7 +123,6 @@ export function uploadWorkspaceInformationById(
 export async function getWorkspacesList(
   watsonAssistantClient: watson.AssistantV1
 ): Promise<Either<Error, WorkspaceCollection>> {
-  logger.info(`Retrieving Workspace List from Watson`);
   return new Promise<Either<Error, WorkspaceCollection>>(resolve => {
     watsonAssistantClient.listWorkspaces({}, (err, response) => {
       resolve(decodeWatsonResponse(err, response));

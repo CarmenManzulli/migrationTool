@@ -9,7 +9,10 @@ import * as t from "io-ts";
 import { NonEmptyString } from "italia-ts-commons/lib/strings";
 import { AssistantV1 } from "watson-developer-cloud";
 import { Workspace } from "watson-developer-cloud/assistant/v1";
-import { WorkspaceExport } from "watson-developer-cloud/conversation/v1-generated";
+import {
+  WorkspaceExport,
+  UpdateWorkspaceParams
+} from "watson-developer-cloud/conversation/v1-generated";
 import { IConfiguration, IMigrationParametersConfig } from "../Configuration";
 import { getDbQueryItemListFromModel } from "../dao/WorkspaceDao";
 import { WorkspaceDbModel } from "../models/WorkspaceDbModel";
@@ -145,7 +148,7 @@ export async function getWorkspacesToMigrate(
     configMigrationParameters
   );
   if (isLeft(dbWorkspacesOrError)) {
-    logger.error("wrong result from getWorkspacesFromDbSource");
+    logger.error(`wrong result from database source ${dbWorkspacesOrError}`);
     return left(dbWorkspacesOrError.value);
   }
   const dbWorkspaces = dbWorkspacesOrError.value;
@@ -273,23 +276,19 @@ export async function uploadWorkspaces(
               } in db Target`
             );
           }
-          const params = {
-            workspace_id: targetWorkspacesId[0].workspaceId as string,
-            description: workspaceToMigrate.workspace.description,
-            language: workspaceToMigrate.workspace.language,
-            entities: workspaceToMigrate.workspace.entities,
-            intents: workspaceToMigrate.workspace.intents,
-            dialog_nodes: workspaceToMigrate.workspace.dialog_nodes,
-            counterexamples: workspaceToMigrate.workspace.counterexamples,
-            metadata: workspaceToMigrate.workspace.metadata,
-            learning_opt_out: workspaceToMigrate.workspace.learning_opt_out,
-            system_settings: workspaceToMigrate.workspace.system_settings
-          };
-
+          // retrieve workspace information from buildWorkspaceParametersForMigrate
+          const buildWorkspaceParametersForMigrateOrError = await buildWorkspaceParametersForMigrate(
+            workspaceToMigrate,
+            targetWorkspacesId[0].workspaceId as string
+          );
+          if (isLeft(buildWorkspaceParametersForMigrateOrError)) {
+            logger.error("Error while building workspace paramaters");
+            throw Error("Error while building workspace paramaters");
+          }
           // update workspace in target watson
           const workspaceUpdateOrError = await WatsonUtils.uploadWorkspaceInformationById(
             watsonTargetClient,
-            params
+            buildWorkspaceParametersForMigrateOrError.value
           );
           if (isLeft(workspaceUpdateOrError)) {
             const errMsg = `error to update workspace`;
@@ -303,4 +302,23 @@ export async function uploadWorkspaces(
   } catch (exception) {
     return left(exception);
   }
+}
+//build a workspace for migrate
+export function buildWorkspaceParametersForMigrate(
+  WorkspacesToMigrate: WorkspaceToMigrate,
+  targetWorkspacesId: string
+): Either<Error, UpdateWorkspaceParams> {
+  const params = {
+    workspace_id: targetWorkspacesId,
+    description: WorkspacesToMigrate.workspace.description,
+    language: WorkspacesToMigrate.workspace.language,
+    entities: WorkspacesToMigrate.workspace.entities,
+    intents: WorkspacesToMigrate.workspace.intents,
+    dialog_nodes: WorkspacesToMigrate.workspace.dialog_nodes,
+    counterexamples: WorkspacesToMigrate.workspace.counterexamples,
+    metadata: WorkspacesToMigrate.workspace.metadata,
+    learning_opt_out: WorkspacesToMigrate.workspace.learning_opt_out,
+    system_settings: WorkspacesToMigrate.workspace.system_settings
+  };
+  return right(params);
 }

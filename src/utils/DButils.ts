@@ -67,7 +67,6 @@ export function closeDbConnection(dbClient: Database): Either<Error, void> {
 export function executeSelectQuery(
   stmt: ODBCStatement
 ): Either<Error, ReadonlyArray<t.Props>> {
-  logger.info("Executing Select ODBC Statement into DB2...");
   const odbcResultOrError = executeOdbcStatement(stmt, false);
   if (isLeft(odbcResultOrError)) {
     return left(odbcResultOrError.value);
@@ -96,7 +95,6 @@ export function executeOdbcStatement(
   closeAfterExecution: boolean
 ): Either<Error, ODBCResult> {
   try {
-    logger.info("Executing ODBC Statement into DB2...");
     const odbcResult = stmt.executeSync();
     if (closeAfterExecution === true) {
       odbcResult.closeSync();

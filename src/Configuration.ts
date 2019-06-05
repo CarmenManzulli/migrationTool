@@ -53,8 +53,7 @@ export const Configuration = {
   },
   MIGRATION_TOOL_PARAMETERS: {
     MIGRATE_ALL: process.env.MIGRATE_ALL || true,
-    SINGLE_WORKSPACE_ID:
-      process.env.SINGLE_WORKSPACE_ID || "7cfe35a9-f710-4ddb-87bd-9015782aaa72"
+    SINGLE_WORKSPACE_ID: process.env.SINGLE_WORKSPACE_ID || ""
   }
 };
 
