@@ -26,7 +26,9 @@ export async function startTool(): Promise<void> {
   // Retrieve a client for Source DB services
   const dbClientSourceOrError = DbUtils.getDb2Client(config.SOURCE.DB);
   if (isLeft(dbClientSourceOrError)) {
-    logger.error("wrong result from getDb2Client source");
+    logger.error(
+      `wrong result from getDb2Client source ${dbClientSourceOrError}`
+    );
     endProcessHandler(dbClientSourceOrError);
     return;
   }
@@ -37,7 +39,7 @@ export async function startTool(): Promise<void> {
     config.SOURCE.WATSON_API
   );
   if (isLeft(watsonSourceClientOrError)) {
-    logger.error("error in source watson client");
+    logger.error(`error in source watson client ${watsonSourceClientOrError}`);
     return;
   }
   const watsonSourceClient = watsonSourceClientOrError.value;
@@ -45,7 +47,9 @@ export async function startTool(): Promise<void> {
   // Retrieve a client for Target DB services
   const dbClientTargetOrError = DbUtils.getDb2Client(config.TARGET.DB);
   if (isLeft(dbClientTargetOrError)) {
-    logger.error("wrong result from getDb2Client target");
+    logger.error(
+      `wrong result from getDb2Client target ${dbClientTargetOrError}`
+    );
     endProcessHandler(dbClientTargetOrError);
     return;
   }
@@ -79,7 +83,9 @@ export async function startTool(): Promise<void> {
     workspacesToMigrate
   );
   if (isLeft(workspacesTargetToMigrateOrError)) {
-    logger.error("error uploading workpaces to migrate");
+    logger.error(
+      `error uploading workpaces to migrate ${workspacesTargetToMigrateOrError}`
+    );
     return;
   }
 
