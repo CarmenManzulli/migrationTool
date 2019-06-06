@@ -6,24 +6,13 @@ import { Either, left, right } from "fp-ts/lib/Either";
 import * as t from "io-ts";
 import * as watson from "watson-developer-cloud";
 import {
-  CreateDialogNode,
-  CreateEntity,
-  CreateExample,
-  CreateIntent,
-  CreateWorkspaceParams,
-  DialogNode,
   GetWorkspaceParams,
-  IntentExport,
-  ValueExport,
   Workspace,
   WorkspaceExport,
   UpdateWorkspaceParams
 } from "watson-developer-cloud/assistant/v1";
 import {
-  CreateValue,
   DeleteWorkspaceParams,
-  EntityExport,
-  Example,
   WorkspaceCollection
 } from "watson-developer-cloud/conversation/v1-generated";
 import { Empty } from "watson-developer-cloud/natural-language-understanding/v1-generated";
@@ -73,7 +62,7 @@ export function decodeWatsonResponse<T>(
   return right(response);
 }
 
-// delete single workspace
+// Assistant API - Delete Workspace
 export function deleteWorkspace(
   watsonAssistantClient: watson.AssistantV1,
   workspaceId: string
@@ -88,8 +77,9 @@ export function deleteWorkspace(
     );
   });
 }
-// get workspace information by id
-export function getWorkspaceInformationById(
+
+// Assistant API - Get workspace information
+export function getWorkspaceInformation(
   watsonAssistantClient: watson.AssistantV1,
   workspaceId: string
 ): Promise<Either<Error, WorkspaceExport>> {
@@ -103,8 +93,8 @@ export function getWorkspaceInformationById(
   });
 }
 
-// update a workspace
-export function updateWorkspaceInformationById(
+// Assistant API - Update Workspace
+export function updateWorkspaceInformation(
   watsonAssistantClient: watson.AssistantV1,
   workspace: UpdateWorkspaceParams
 ): Promise<Either<Error, Workspace>> {
@@ -128,117 +118,4 @@ export async function getWorkspacesList(
       resolve(decodeWatsonResponse(err, response));
     });
   });
-}
-
-// create single workspace
-export function createWorkspace(
-  watsonAssistantClient: watson.AssistantV1,
-  workspace: WorkspaceExport
-): Promise<Either<Error, Workspace>> {
-  logger.info(`Create workspace for Target`);
-  return new Promise<Either<Error, Workspace>>(resolve => {
-    const params = {
-      name: workspace.name,
-      description: workspace.description,
-      language: workspace.language,
-      intents: convertIntentExportIntoCreateIntent(workspace.intents),
-      entities: convertEntityExportIntoCreateEntity(workspace.entities),
-      dialog_nodes: convertDialogExportIntoCreateDialog(workspace.dialog_nodes),
-      counterexamples: workspace.counterexamples,
-      metadata: workspace.metadata,
-      learning_opt_out: workspace.learning_opt_out,
-      system_settings: workspace.system_settings
-    } as CreateWorkspaceParams;
-    watsonAssistantClient.createWorkspace(params, (err, response) => {
-      resolve(decodeWatsonResponse(err, response));
-    });
-  });
-}
-
-export function convertExamplesExportIntoCreateExamples(
-  exampleExportList: ReadonlyArray<Example>
-): ReadonlyArray<CreateExample> {
-  return exampleExportList.map(
-    (exampleExport: Example): CreateExample => {
-      return {
-        text: exampleExport.example_text,
-        mentions: exampleExport.mentions
-      };
-    }
-  );
-}
-
-export function convertIntentExportIntoCreateIntent(
-  intentExportList: ReadonlyArray<IntentExport>
-): ReadonlyArray<CreateIntent> {
-  return intentExportList.map(
-    (intentExport: IntentExport): CreateIntent => {
-      return {
-        intent: intentExport.intent_name,
-        description: intentExport.intent_name,
-        examples: convertExamplesExportIntoCreateExamples(intentExport.examples)
-      } as CreateIntent;
-    }
-  );
-}
-
-export function convertValuesExportIntoCreateValues(
-  valuesExportList: ReadonlyArray<ValueExport>
-): ReadonlyArray<CreateValue> {
-  return valuesExportList.map(
-    (valueExport: ValueExport): CreateValue => {
-      return {
-        value: valueExport.value_text,
-        metadata: valueExport.metadata,
-        synonyms: valueExport.synonyms,
-        patterns: valueExport.patterns,
-        value_type: valueExport.value_type
-      };
-    }
-  );
-}
-
-export function convertEntityExportIntoCreateEntity(
-  entityExportList: ReadonlyArray<EntityExport>
-): ReadonlyArray<CreateEntity> {
-  return entityExportList.map(
-    (entityExport: EntityExport): CreateEntity => {
-      return {
-        entity: entityExport.entity_name,
-        description: entityExport.description,
-        metadata: entityExport.metadata,
-        fuzzy_match: entityExport.fuzzy_match,
-        values: convertValuesExportIntoCreateValues(entityExport.values)
-      } as CreateEntity;
-    }
-  );
-}
-
-export function convertDialogExportIntoCreateDialog(
-  dialogExportList: ReadonlyArray<DialogNode>
-): ReadonlyArray<CreateDialogNode> {
-  return dialogExportList.map(
-    (entityExport: DialogNode): CreateDialogNode => {
-      return {
-        dialog_node: entityExport.dialog_node_id,
-        description: entityExport.description,
-        conditions: entityExport.conditions,
-        parent: entityExport.parent,
-        previous_sibling: entityExport.previous_sibling,
-        output: entityExport.output,
-        context: entityExport.metadata,
-        metadata: entityExport.metadata,
-        next_step: entityExport.next_step,
-        actions: entityExport.actions,
-        title: entityExport.title,
-        node_type: entityExport.node_type,
-        event_name: entityExport.event_name,
-        variable: entityExport.variable,
-        digress_in: entityExport.digress_in,
-        digress_out: entityExport.digress_out,
-        digress_out_slots: entityExport.digress_out_slots,
-        user_label: entityExport.user_label
-      } as CreateDialogNode;
-    }
-  );
 }

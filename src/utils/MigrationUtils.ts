@@ -14,7 +14,10 @@ import {
   UpdateWorkspaceParams
 } from "watson-developer-cloud/conversation/v1-generated";
 import { IConfiguration, IMigrationParametersConfig } from "../Configuration";
-import { getDbQueryItemListFromModel } from "../dao/WorkspaceDao";
+import {
+  getDbQueryItemListFromModel,
+  resultArrayToWorkspaceList
+} from "../dao/WorkspaceDao";
 import { WorkspaceDbModel } from "../models/WorkspaceDbModel";
 import { WorkspaceDbSchema } from "../schema/WorkspaceDbSchema";
 import * as DbUtils from "./DbUtils";
@@ -26,8 +29,8 @@ import {
   WorkspacesToMigrate
 } from "../types/WorkspaceToMigrate";
 
-// Get query statement
-export function getQueryStatement(
+// Get the query statement based on configuration params
+export function getRightQueryStatement(
   tableName: NonEmptyString,
   dbClient: Database,
   migrationWorkspaceAll: boolean,
@@ -61,7 +64,7 @@ export function getQueryStatement(
   return right(allSelectStatementOrError.value);
 }
 
-// Get Id from db Target
+// Get workspaces IDs from db Target
 export function getTargetWorkspacesFromTargetDb(
   dbClientTarget: Database,
   tableName: NonEmptyString,
@@ -94,7 +97,7 @@ export function getWorkspacesFromDbSource(
   migrationParametersConfig: IMigrationParametersConfig
 ): Either<Error, ReadonlyArray<WorkspaceDbModel>> {
   logger.info(`Retrieving Workspaces from SOURCE DB...`);
-  const queryStmtOrError = getQueryStatement(
+  const queryStmtOrError = getRightQueryStatement(
     tableName,
     dbClient,
     migrationParametersConfig.MIGRATE_ALL,
@@ -109,29 +112,6 @@ export function getWorkspacesFromDbSource(
     return left(queryResultOrError.value);
   }
   return resultArrayToWorkspaceList(queryResultOrError.value);
-}
-
-// Convert db type into list type
-export function resultArrayToWorkspaceList(
-  queryResultList: ReadonlyArray<t.Props>
-): Either<Error, ReadonlyArray<WorkspaceDbModel>> {
-  try {
-    const workspaceDbModelList = queryResultList.map(
-      (workspaceDbRecord: t.Props): WorkspaceDbModel => {
-        return WorkspaceDbModel.decode({
-          workspaceName: workspaceDbRecord.NAME,
-          workspaceLabel: workspaceDbRecord.LABEL,
-          workspaceId: workspaceDbRecord.ID
-        }).getOrElseL(errors => {
-          throw Error(errors.toString());
-        });
-      }
-    );
-    return right(workspaceDbModelList);
-  } catch (exception) {
-    const errMsg = `Error parsing workspaceDbModelList from DB`;
-    return left(Error(errMsg));
-  }
 }
 
 export async function getWorkspacesToMigrate(
@@ -177,7 +157,7 @@ export async function getWorkspacesToMigrate(
           if (listDbInWatsonListFound.length !== 1) {
             throw Error("Length Other Than Zero");
           }
-          const workspaceInformationOrError = await WatsonUtils.getWorkspaceInformationById(
+          const workspaceInformationOrError = await WatsonUtils.getWorkspaceInformation(
             watsonSourceClient,
             listDbInWatsonListFound[0]
           );
@@ -214,7 +194,7 @@ export function getFileBackupName(nameId: string): string {
       .concat(".json");
   }
 }
-// searches for two identical elements between two lists
+// filter list of workspaces based on workspaceId
 export function searchListDbInWatsonList(
   watsonWorkspacesList: ReadonlyArray<Workspace>,
   idWorkspaceDatabase: string
@@ -286,7 +266,7 @@ export async function updateWorkspaces(
             throw Error("Error While Building Workspace Paramaters");
           }
           // update workspace in target watson
-          const workspaceUpdateOrError = await WatsonUtils.updateWorkspaceInformationById(
+          const workspaceUpdateOrError = await WatsonUtils.updateWorkspaceInformation(
             watsonTargetClient,
             buildWorkspaceParametersForMigrateOrError.value
           );

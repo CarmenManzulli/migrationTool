@@ -17,49 +17,48 @@ export async function startTool(): Promise<void> {
   // Retrieve server configuration
   const configOrError = Configuration.getAppConfiguration();
   if (isLeft(configOrError)) {
-    logger.error(`Error Getting App Configuration ${configOrError.value}`);
+    logger.error(`Error Getting App Configuration: ${configOrError.value}`);
     return;
   }
-
   const config = configOrError.value;
 
-  // Create db client for source
+  // Create Db client source
   const dbClientSourceOrError = DbUtils.getDb2Client(config.SOURCE.DB);
   if (isLeft(dbClientSourceOrError)) {
-    logger.error(`Error Getting Db2 Client Source ${dbClientSourceOrError}`);
+    logger.error(`Error Getting Db2 Client Source: ${dbClientSourceOrError}`);
     endProcessHandler(dbClientSourceOrError);
     return;
   }
   const dbClientSource = dbClientSourceOrError.value;
 
-  // CREATE CLIENT WATSON SOURCE
+  // Create Assistant client source
   const watsonSourceClientOrError = WatsonUtils.getWatsonAssistantClient(
     config.SOURCE.WATSON_API
   );
   if (isLeft(watsonSourceClientOrError)) {
     logger.error(
-      `Error Getting In Assistant Client Source ${watsonSourceClientOrError}`
+      `Error Getting Assistant Client Source: ${watsonSourceClientOrError}`
     );
     return;
   }
   const watsonSourceClient = watsonSourceClientOrError.value;
 
-  // Create db client for target
+  // Create db client target
   const dbClientTargetOrError = DbUtils.getDb2Client(config.TARGET.DB);
   if (isLeft(dbClientTargetOrError)) {
-    logger.error(`Error Getting Db2 Client Target ${dbClientTargetOrError}`);
+    logger.error(`Error Getting Db2 Client Target: ${dbClientTargetOrError}`);
     endProcessHandler(dbClientTargetOrError);
     return;
   }
   const dbClientTarget = dbClientTargetOrError.value;
 
-  // CREATE CLIENT WATSON TARGET
+  // Create Assistant client target
   const watsonTargetClientOrError = WatsonUtils.getWatsonAssistantClient(
     config.TARGET.WATSON_API
   );
   if (isLeft(watsonTargetClientOrError)) {
     logger.error(
-      `Error Getting In Assistant Client Target ${watsonTargetClientOrError}`
+      `Error Getting Assistant Client Target: ${watsonTargetClientOrError}`
     );
     return;
   }
@@ -72,7 +71,7 @@ export async function startTool(): Promise<void> {
   );
   if (isLeft(workspacesToMigrateOrError)) {
     logger.error(
-      `Error Getting Workpaces To Migrate ${workspacesToMigrateOrError}`
+      `Error Getting Workpaces To Migrate: ${workspacesToMigrateOrError}`
     );
     return;
   }
@@ -86,7 +85,7 @@ export async function startTool(): Promise<void> {
   );
   if (isLeft(workspacesTargetToMigrateOrError)) {
     logger.error(
-      `Error Updating Workpaces To Migrate ${workspacesTargetToMigrateOrError}`
+      `Error Updating Workpaces: ${workspacesTargetToMigrateOrError}`
     );
     return;
   }
