@@ -30,9 +30,31 @@ export const Configuration = {
         "https://gateway-fra.watsonplatform.net/assistant/api"
     }
   },
+  TARGET: {
+    DB: {
+      DBNAME: process.env.TARGET_DB2_DBNAME || "BLUDB",
+      HOSTNAME:
+        process.env.TARGET_DB2_HOSTNAME ||
+        "dashdb-txn-sbox-yp-dal09-04.services.dal.bluemix.net",
+      UID: process.env.TARGET_DB2_UID || "hsp40824",
+      PWD: process.env.TARGET_DB2_PWD || "cbqw+bc0nzkfh5p4",
+      PORT: Number(process.env.TARGET_DB2_PORT) || 50000
+    },
+    WATSON_API: {
+      USERNAME: process.env.TARGET_WATSON_USERNAME || "apikey",
+      VERSION: process.env.TARGET_WATSON_VERSION || "2018-07-10",
+      PASSWORD:
+        process.env.TARGET_WATSON_PASSWORD ||
+        "baz7-IqfcrUhfZuSAhHme2BsnsYX6yoQtMHa4ACLt16M",
+      URL:
+        process.env.TARGET_WATSON_URL ||
+        "https://gateway-fra.watsonplatform.net/assistant/api"
+    }
+  },
   MIGRATION_TOOL_PARAMETERS: {
-    MIGRATE_ALL: true,
-    SINGLE_WORKSPACE_ID: process.env.SINGLE_WORKSPACE_ID || ""
+    MIGRATE_ALL: process.env.MIGRATE_ALL || false,
+    SINGLE_WORKSPACE_ID:
+      process.env.SINGLE_WORKSPACE_ID || "327ba2b0-958e-4f86-ab4d-f3a68a4c77dd"
   }
 };
 
@@ -53,11 +75,15 @@ export const IDatabaseConfig = t.interface({
 });
 export type IDatabaseConfig = t.TypeOf<typeof IDatabaseConfig>;
 
-export const IEnvironmentConfig = t.interface({
-  BACKUP_DIRECTORY: NonEmptyString,
-  DB: IDatabaseConfig,
-  WATSON_API: IWatsonConfig
-});
+export const IEnvironmentConfig = t.intersection([
+  t.interface({
+    DB: IDatabaseConfig,
+    WATSON_API: IWatsonConfig
+  }),
+  t.partial({
+    BACKUP_DIRECTORY: NonEmptyString
+  })
+]);
 export type IEnvironmentConfig = t.TypeOf<typeof IEnvironmentConfig>;
 
 export const IMigrationParametersConfig = t.interface({
@@ -70,6 +96,7 @@ export type IMigrationParametersConfig = t.TypeOf<
 
 export const IConfiguration = t.interface({
   SOURCE: IEnvironmentConfig,
+  TARGET: IEnvironmentConfig,
   MIGRATION_TOOL_PARAMETERS: IMigrationParametersConfig
 });
 export type IConfiguration = t.TypeOf<typeof IConfiguration>;

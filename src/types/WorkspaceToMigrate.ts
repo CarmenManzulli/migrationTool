@@ -1,7 +1,11 @@
-import { WorkspaceExport } from "watson-developer-cloud/assistant/v1";
-import { WorkspaceDbModel } from "../models/WorkspaceDbModel";
+import * as t from "io-ts";
+import { NonEmptyString } from "italia-ts-commons/lib/strings";
 
-export interface IWorkspaceToMigrate {
-  readonly workspaceExport: WorkspaceExport;
-  readonly workspaceDbModel: WorkspaceDbModel;
-}
+export const WorkspaceToMigrate = t.interface({
+  dbWorkspaceName: NonEmptyString,
+  workspace: t.any
+});
+export type WorkspaceToMigrate = t.TypeOf<typeof WorkspaceToMigrate>;
+
+export const WorkspacesToMigrate = t.readonlyArray(WorkspaceToMigrate);
+export type WorkspacesToMigrate = t.TypeOf<typeof WorkspacesToMigrate>;
