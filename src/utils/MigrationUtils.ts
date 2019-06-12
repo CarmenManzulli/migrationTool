@@ -5,13 +5,12 @@
 import { fs } from "file-system";
 import { Either, isLeft, left, right } from "fp-ts/lib/Either";
 import { Database, ODBCStatement } from "ibm_db";
-import * as t from "io-ts";
 import { NonEmptyString } from "italia-ts-commons/lib/strings";
 import { AssistantV1 } from "watson-developer-cloud";
 import { Workspace } from "watson-developer-cloud/assistant/v1";
 import {
-  WorkspaceExport,
-  UpdateWorkspaceParams
+  UpdateWorkspaceParams,
+  WorkspaceExport
 } from "watson-developer-cloud/conversation/v1-generated";
 import { IConfiguration, IMigrationParametersConfig } from "../Configuration";
 import {
@@ -20,14 +19,14 @@ import {
 } from "../dao/WorkspaceDao";
 import { WorkspaceDbModel } from "../models/WorkspaceDbModel";
 import { WorkspaceDbSchema } from "../schema/WorkspaceDbSchema";
+import {
+  WorkspacesToMigrate,
+  WorkspaceToMigrate
+} from "../types/WorkspaceToMigrate";
 import * as DbUtils from "./DbUtils";
 import { logger } from "./Logger";
 import * as QueryUtils from "./QueryUtils";
 import * as WatsonUtils from "./WatsonUtils";
-import {
-  WorkspaceToMigrate,
-  WorkspacesToMigrate
-} from "../types/WorkspaceToMigrate";
 
 // Get the query statement based on configuration params
 export function getRightQueryStatement(
@@ -74,7 +73,7 @@ export function getTargetWorkspacesFromTargetDb(
     workspaceName: RecordName
   });
   const SelectStatementOrError = QueryUtils.getSelectStatement(
-    tableName,
+    `${tableName}_TEST`,
     queryFilters,
     dbClientTarget
   );
@@ -103,6 +102,7 @@ export function getWorkspacesFromDbSource(
     migrationParametersConfig.MIGRATE_ALL,
     migrationParametersConfig.SINGLE_WORKSPACE_ID
   );
+
   if (isLeft(queryStmtOrError)) {
     return left(queryStmtOrError.value);
   }
@@ -283,22 +283,23 @@ export async function updateWorkspaces(
     return left(exception);
   }
 }
-//build a workspace for migrate
+
+// TODO build a workspace for migrate
 export function buildWorkspaceParametersForMigrate(
-  WorkspacesToMigrate: WorkspaceToMigrate,
+  workspacesToMigrate: WorkspaceToMigrate,
   targetWorkspacesId: string
 ): Either<Error, UpdateWorkspaceParams> {
   const params = {
     workspace_id: targetWorkspacesId,
-    description: WorkspacesToMigrate.workspace.description,
-    language: WorkspacesToMigrate.workspace.language,
-    entities: WorkspacesToMigrate.workspace.entities,
-    intents: WorkspacesToMigrate.workspace.intents,
-    dialog_nodes: WorkspacesToMigrate.workspace.dialog_nodes,
-    counterexamples: WorkspacesToMigrate.workspace.counterexamples,
-    metadata: WorkspacesToMigrate.workspace.metadata,
-    learning_opt_out: WorkspacesToMigrate.workspace.learning_opt_out,
-    system_settings: WorkspacesToMigrate.workspace.system_settings
+    description: workspacesToMigrate.workspace.description,
+    language: workspacesToMigrate.workspace.language,
+    entities: workspacesToMigrate.workspace.entities,
+    intents: workspacesToMigrate.workspace.intents,
+    dialog_nodes: workspacesToMigrate.workspace.dialog_nodes,
+    counterexamples: workspacesToMigrate.workspace.counterexamples,
+    metadata: workspacesToMigrate.workspace.metadata,
+    learning_opt_out: workspacesToMigrate.workspace.learning_opt_out,
+    system_settings: workspacesToMigrate.workspace.system_settings
   };
   return right(params);
 }

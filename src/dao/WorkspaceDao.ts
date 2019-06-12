@@ -91,9 +91,9 @@ export function resultArrayToWorkspaceList(
     const workspaceDbModelList = queryResultList.map(
       (workspaceDbRecord: t.Props): WorkspaceDbModel => {
         return WorkspaceDbModel.decode({
-          workspaceId: workspaceDbRecord.workspaceId,
-          workspaceLabel: workspaceDbRecord.workspaceLabel,
-          workspaceName: workspaceDbRecord.workspaceName
+          workspaceId: workspaceDbRecord.ID,
+          workspaceLabel: workspaceDbRecord.LABEL,
+          workspaceName: workspaceDbRecord.NAME
         }).getOrElseL(errors => {
           throw Error(reporters.readableReport(errors));
         });

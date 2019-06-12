@@ -4,7 +4,9 @@
  */
 import { Either } from "fp-ts/lib/Either";
 import * as t from "io-ts";
+import { reporters } from "italia-ts-commons";
 import { NonEmptyString } from "italia-ts-commons/lib/strings";
+import { isNullOrUndefined } from "util";
 
 export const CONFIG = process.env.WINSTON_LOG_LEVEL || "debug";
 export const Configuration = {
@@ -52,9 +54,9 @@ export const Configuration = {
     }
   },
   MIGRATION_TOOL_PARAMETERS: {
-    MIGRATE_ALL: process.env.MIGRATE_ALL || false,
+    MIGRATE_ALL: getBoolValueFromProcessEnv(process.env.MIGRATE_ALL, false),
     SINGLE_WORKSPACE_ID:
-      process.env.SINGLE_WORKSPACE_ID || "327ba2b0-958e-4f86-ab4d-f3a68a4c77dd"
+      process.env.SINGLE_WORKSPACE_ID || "7cfe35a9-f710-4ddb-87bd-9015782aaa72"
   }
 };
 
@@ -88,7 +90,7 @@ export type IEnvironmentConfig = t.TypeOf<typeof IEnvironmentConfig>;
 
 export const IMigrationParametersConfig = t.interface({
   MIGRATE_ALL: t.boolean,
-  SINGLE_WORKSPACE_ID: t.string
+  SINGLE_WORKSPACE_ID: NonEmptyString
 });
 export type IMigrationParametersConfig = t.TypeOf<
   typeof IMigrationParametersConfig
@@ -101,9 +103,27 @@ export const IConfiguration = t.interface({
 });
 export type IConfiguration = t.TypeOf<typeof IConfiguration>;
 
+export function getBoolValueFromProcessEnv(
+  value: string,
+  defaultValue: boolean
+): boolean | string {
+  if (isNullOrUndefined(value)) {
+    return defaultValue;
+  } else if (value === "1" || value.toLowerCase() === "true") {
+    return true;
+  } else if (value === "0" || value.toLowerCase() === "false") {
+    return false;
+  }
+  return value;
+}
+
 export function getAppConfiguration(): Either<Error, IConfiguration> {
   // Retrieve server configuration
   return IConfiguration.decode(Configuration).mapLeft(err => {
-    return new Error(`Cannot retrieve a valid Server Configuration: ${err}`);
+    return Error(
+      `Cannot retrieve a valid Server Configuration: ${reporters.readableReport(
+        err
+      )}`
+    );
   });
 }

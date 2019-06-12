@@ -26,7 +26,6 @@ export async function startTool(): Promise<void> {
   const dbClientSourceOrError = DbUtils.getDb2Client(config.SOURCE.DB);
   if (isLeft(dbClientSourceOrError)) {
     logger.error(`Error Getting Db2 Client Source: ${dbClientSourceOrError}`);
-    endProcessHandler(dbClientSourceOrError);
     return;
   }
   const dbClientSource = dbClientSourceOrError.value;
@@ -47,7 +46,7 @@ export async function startTool(): Promise<void> {
   const dbClientTargetOrError = DbUtils.getDb2Client(config.TARGET.DB);
   if (isLeft(dbClientTargetOrError)) {
     logger.error(`Error Getting Db2 Client Target: ${dbClientTargetOrError}`);
-    endProcessHandler(dbClientTargetOrError);
+    endProcessHandler(dbClientSource);
     return;
   }
   const dbClientTarget = dbClientTargetOrError.value;
