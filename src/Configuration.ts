@@ -34,13 +34,13 @@ export const Configuration = {
   },
   TARGET: {
     DB: {
-      DBNAME: process.env.TARGET_DB2_DBNAME || "BLUDB",
+      DBNAME: process.env.SOURCE_DB2_DBNAME || "BLUDB",
       HOSTNAME:
-        process.env.TARGET_DB2_HOSTNAME ||
-        "dashdb-txn-sbox-yp-dal09-04.services.dal.bluemix.net",
-      UID: process.env.TARGET_DB2_UID || "hsp40824",
-      PWD: process.env.TARGET_DB2_PWD || "cbqw+bc0nzkfh5p4",
-      PORT: Number(process.env.TARGET_DB2_PORT) || 50000
+        process.env.SOURCE_DB2_HOSTNAME ||
+        "dashdb-txn-sbox-yp-lon02-01.services.eu-gb.bluemix.net",
+      UID: process.env.SOURCE_DB2_UID || "jtn54202",
+      PWD: process.env.SOURCE_DB2_PWD || "z8q7jm3x2-d1dw5r",
+      PORT: Number(process.env.SOURCE_DB2_PORT) || 50000
     },
     WATSON_API: {
       USERNAME: process.env.TARGET_WATSON_USERNAME || "apikey",
@@ -54,9 +54,8 @@ export const Configuration = {
     }
   },
   MIGRATION_TOOL_PARAMETERS: {
-    MIGRATE_ALL: getBoolValueFromProcessEnv(process.env.MIGRATE_ALL, false),
-    SINGLE_WORKSPACE_ID:
-      process.env.SINGLE_WORKSPACE_ID || "7cfe35a9-f710-4ddb-87bd-9015782aaa72"
+    MIGRATE_ALL: getBoolValueFromProcessEnv(process.env.MIGRATE_ALL, true),
+    SINGLE_WORKSPACE_ID: process.env.SINGLE_WORKSPACE_ID || ""
   }
 };
 
@@ -90,7 +89,7 @@ export type IEnvironmentConfig = t.TypeOf<typeof IEnvironmentConfig>;
 
 export const IMigrationParametersConfig = t.interface({
   MIGRATE_ALL: t.boolean,
-  SINGLE_WORKSPACE_ID: NonEmptyString
+  SINGLE_WORKSPACE_ID: t.string
 });
 export type IMigrationParametersConfig = t.TypeOf<
   typeof IMigrationParametersConfig
