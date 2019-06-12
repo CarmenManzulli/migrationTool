@@ -35,11 +35,8 @@ export function getRightQueryStatement(
   migrationWorkspaceAll: boolean,
   singleWorkspaceId: string
 ): Either<Error, ODBCStatement> {
-  if (migrationWorkspaceAll === false) {
-    if (singleWorkspaceId === "") {
-      logger.error("SINGLE_WORKSPACE_ID is empty");
-      return left(Error("SINGLE_WORKSPACE_ID is empty"));
-    }
+  if (migrationWorkspaceAll === false && singleWorkspaceId !== "") {
+    logger.info("Migrating a single workspace");
     const queryFilters = getDbQueryItemListFromModel({
       workspaceId: singleWorkspaceId as NonEmptyString
     });
@@ -53,14 +50,18 @@ export function getRightQueryStatement(
     }
     return right(oneSelectStatementOrError.value);
   }
-  const allSelectStatementOrError = QueryUtils.getSelectAllStatement(
-    tableName,
-    dbClient
-  );
-  if (isLeft(allSelectStatementOrError)) {
-    return left(allSelectStatementOrError.value);
+  if (migrationWorkspaceAll === true && singleWorkspaceId === "") {
+    const allSelectStatementOrError = QueryUtils.getSelectAllStatement(
+      tableName,
+      dbClient
+    );
+    if (isLeft(allSelectStatementOrError)) {
+      return left(allSelectStatementOrError.value);
+    }
+    return right(allSelectStatementOrError.value);
   }
-  return right(allSelectStatementOrError.value);
+  logger.error("Wrong Migration Tool Parameters found");
+  return left(Error("Wrong Migration Tool Parameters found"));
 }
 
 // Get workspaces IDs from db Target
@@ -136,6 +137,7 @@ export async function getWorkspacesToMigrate(
     logger.error("There Aren't Elements In Database Source");
     return left(Error("There Aren't Elements In Database Source"));
   }
+  console.log("getting dbWorkspaces " + dbWorkspaces.length);
   // Getting List from source watson
   const watsonWorkspacesOrError = await WatsonUtils.getWorkspacesList(
     watsonSourceClient

@@ -75,8 +75,8 @@ export async function startTool(): Promise<void> {
     return;
   }
   const workspacesToMigrate = workspacesToMigrateOrError.value;
-
-  //migrate from source to watson target
+  console.log(JSON.stringify(workspacesToMigrate.length));
+  // migrate from source to watson target
   const workspacesTargetToMigrateOrError = await MigrationUtils.updateWorkspaces(
     dbClientTarget,
     watsonClientTarget,

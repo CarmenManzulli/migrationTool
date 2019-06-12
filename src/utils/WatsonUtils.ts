@@ -85,7 +85,7 @@ export function getWorkspaceInformation(
 ): Promise<Either<Error, WorkspaceExport>> {
   return new Promise<Either<Error, WorkspaceExport>>(resolve => {
     watsonAssistantClient.getWorkspace(
-      { workspace_id: workspaceId, export: true } as GetWorkspaceParams,
+      { workspace_id: workspaceId, export: false } as GetWorkspaceParams,
       (err, response) => {
         resolve(decodeWatsonResponse(err, response));
       }
